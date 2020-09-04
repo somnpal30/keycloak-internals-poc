@@ -1,10 +1,20 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
+import {FlowComponent} from './component/flow/flow.component';
+import {AppAuthGuard} from './AppAuthGuard';
 
-const routes: Routes = [];
+const routes: Routes = [
+  {
+    path: '', redirectTo: '/flow', pathMatch: 'full'
+  },
+  {
+    path: 'flow', component: FlowComponent, canActivate : [AppAuthGuard]
+  }
+];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
+  providers :[AppAuthGuard]
 })
 export class AppRoutingModule { }
