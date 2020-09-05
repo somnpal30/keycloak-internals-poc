@@ -8,7 +8,7 @@ const routes: Routes = [
     path: '', redirectTo: '/flow', pathMatch: 'full'
   },
   {
-    path: 'flow', component: FlowComponent, canActivate : [AppAuthGuard]
+    path: 'flow', component: FlowComponent, canActivate : [AppAuthGuard], data : { roles : ['UI-APP-ROLE']}
   }
 ];
 
