@@ -1,12 +1,12 @@
-import { BrowserModule } from '@angular/platform-browser';
+import {BrowserModule} from '@angular/platform-browser';
 import {APP_INITIALIZER, NgModule} from '@angular/core';
 
-import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
-import { FlowComponent } from './component/flow/flow.component';
-import { HeaderComponent } from './component/header/header.component';
-import { NavComponent } from './component/nav/nav.component';
-import { TopnavComponent } from './component/topnav/topnav.component';
+import {AppRoutingModule} from './app-routing.module';
+import {AppComponent} from './app.component';
+import {FlowComponent} from './component/flow/flow.component';
+import {HeaderComponent} from './component/header/header.component';
+import {NavComponent} from './component/nav/nav.component';
+import {TopnavComponent} from './component/topnav/topnav.component';
 import {KeycloakAngularModule, KeycloakService} from 'keycloak-angular';
 
 @NgModule({
@@ -24,8 +24,8 @@ import {KeycloakAngularModule, KeycloakService} from 'keycloak-angular';
   ],
   providers: [
     {
-      provide : APP_INITIALIZER,
-      useFactory : initializeKeycloak,
+      provide: APP_INITIALIZER,
+      useFactory: initializeKeycloak,
       multi: true,
       deps: [KeycloakService],
 
@@ -34,7 +34,8 @@ import {KeycloakAngularModule, KeycloakService} from 'keycloak-angular';
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+}
 
 
 function initializeKeycloak(keycloak: KeycloakService) {
@@ -42,17 +43,20 @@ function initializeKeycloak(keycloak: KeycloakService) {
     keycloak.init({
       config: {
         url: 'http://localhost:8181/auth',
-        realm: 'DEMOO',
-        clientId: 'UI-APP',
+        // realm: 'DEMOO',
+        // clientId: 'UI-APP',
+        // realm: 'SocialAuth',
+        // clientId: 'UI-APP-SOCIAL',
+        realm : 'FederatedAuthentication',
+        clientId : 'UI-APP-FED'
       },
       initOptions: {
         onLoad: 'check-sso',
-        checkLoginIframe : false,
-       silentCheckSsoRedirectUri:
-          window.location.origin + '/assets/silent-check-sso.html',
+        checkLoginIframe: false,
+        // silentCheckSsoRedirectUri:   window.location.origin + '/assets/silent-check-sso.html',
       },
       // enableBearerInterceptor: true,
-       loadUserProfileAtStartUp: true,
+      loadUserProfileAtStartUp: true,
       // bearerExcludedUrls: ['/assets']
     });
 }

@@ -21,9 +21,14 @@ export class AppAuthGuard extends KeycloakAuthGuard {
     if (!(requiredRoles instanceof Array) || requiredRoles.length === 0) {
       return true;
     }
-
+    console.log('>>> ' + this.roles);
+    console.log('<<< ' + requiredRoles);
+    this.keycloakService.getToken().then(value => {
+      console.log(value);
+    });
     // Allow the user to proceed if all the required roles are present.
-    return requiredRoles.every((role) => this.roles.includes(role));
+
+    return requiredRoles.some((role) => this.roles.includes(role));
   }
 
 
