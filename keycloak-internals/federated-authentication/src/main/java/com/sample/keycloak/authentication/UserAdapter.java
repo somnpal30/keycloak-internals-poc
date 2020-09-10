@@ -43,6 +43,8 @@ public class UserAdapter  extends AbstractUserAdapterFederatedStorage {
 
     }
 
+   
+
     @Override
     public void setEmail(String email) {
         federatedUserModel.setEmail(email);

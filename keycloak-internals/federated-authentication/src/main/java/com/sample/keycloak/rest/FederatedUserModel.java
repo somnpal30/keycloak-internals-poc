@@ -47,11 +47,13 @@ public class FederatedUserModel implements Serializable
     }
 
     public String getPassword() {
-        return "password";
+        return this.password;
+        //return "password";
     }
 
     public void setPassword(String password) {
-        this.password = "password";
+        this.password = password;
+        //this.password = "password";
     }
 
     public String getUsername()

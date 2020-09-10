@@ -26,13 +26,14 @@ public class ExternalUserStorageProvider implements UserStorageProvider,
         CredentialInputUpdater,
         CredentialInputValidator,
         OnUserCache {
+
     private static final Logger logger = Logger.getLogger(ExternalUserStorageProvider.class);
     public static final String PASSWORD_CACHE_KEY = UserAdapter.class.getName() + ".password";
     protected KeycloakSession keycloakSession;
     protected ComponentModel componentModel;
     protected final FederatedUserService federatedUserService;
 
-    protected Map<String, UserModel> loadedUsers = new HashMap<>();
+    protected Map<String, FederatedUserModel> loadedUsers = new HashMap<>();
 
     public ExternalUserStorageProvider(KeycloakSession session,
                                        ComponentModel model,
@@ -112,14 +113,22 @@ public class ExternalUserStorageProvider implements UserStorageProvider,
         logger.info("getUserById: " + id);
         StorageId storageId = new StorageId(id);
         String username = storageId.getExternalId();
-        FederatedUserModel federatedUserModel = federatedUserService.getUserDetails(username);
-        return new UserAdapter(keycloakSession, realmModel, componentModel, federatedUserModel);
+//        FederatedUserModel federatedUserModel = federatedUserService.getUserDetails(username);
+
+        UserModel userModel = keycloakSession.userLocalStorage().getUserByUsername(username,realmModel);
+        if(Objects.nonNull(userModel)){
+            return  userModel;
+        }else{
+            keycloakSession.userLocalStorage().addUser(realmModel,username);
+            return new UserAdapter(keycloakSession, realmModel, componentModel, getFederatedUser(username));
+        }
+
     }
 
     @Override
     public UserModel getUserByUsername(String username, RealmModel realmModel) {
-        FederatedUserModel federatedUserModel = federatedUserService.getUserDetails(username);
-        return new UserAdapter(keycloakSession, realmModel, componentModel, federatedUserModel);
+//        FederatedUserModel federatedUserModel = federatedUserService.getUserDetails(username);
+        return new UserAdapter(keycloakSession, realmModel, componentModel, getFederatedUser(username));
     }
 
     @Override
@@ -182,9 +191,9 @@ public class ExternalUserStorageProvider implements UserStorageProvider,
     }
 
     @Override
-    public UserModel addUser(RealmModel realmModel, String s) {
-        return null;
-        //TODO
+    public UserModel addUser(RealmModel realmModel, String username) {
+        logger.info("added user: " + username);
+        return new UserAdapter(keycloakSession, realmModel, componentModel, getFederatedUser(username));
     }
 
     @Override
@@ -211,6 +220,19 @@ public class ExternalUserStorageProvider implements UserStorageProvider,
             adapter = (UserAdapter) user;
         }
         return adapter;
+    }
+
+    public FederatedUserModel getFederatedUser(String username) {
+        FederatedUserModel federatedUserModel = null;
+        if (loadedUsers.containsKey(username)) {
+              federatedUserModel = loadedUsers.get(username);
+        } else {
+            logger.info("2");
+            federatedUserModel = federatedUserService.getUserDetails(username);
+
+            loadedUsers.put(username, federatedUserModel);
+        }
+        return federatedUserModel;
     }
 
 }
