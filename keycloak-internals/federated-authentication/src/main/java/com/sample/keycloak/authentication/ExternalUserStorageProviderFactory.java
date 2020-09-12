@@ -14,12 +14,12 @@ import org.keycloak.storage.UserStorageProviderFactory;
 public class ExternalUserStorageProviderFactory implements UserStorageProviderFactory<ExternalUserStorageProvider> {
     private static final Logger logger = Logger.getLogger(ExternalUserStorageProviderFactory.class);
     public static final String PROVIDER_NAME = "external-user-authentication";
-    public static final String PROP_USER_VALIDATION_URL = "http://localhost:8000";
-    FederatedUserService federatedUserService;
+    public static final String PROP_USER_VALIDATION_URL = "http://localhost:3000";
+    ExternalUserService externalUserService;
     @Override
     public ExternalUserStorageProvider create(KeycloakSession keycloakSession, ComponentModel componentModel) {
         logger.info("create .........................");
-        return new ExternalUserStorageProvider(keycloakSession,componentModel,federatedUserService);
+        return new ExternalUserStorageProvider(keycloakSession,componentModel,externalUserService);
     }
 
     @Override
@@ -33,18 +33,18 @@ public class ExternalUserStorageProviderFactory implements UserStorageProviderFa
     @Override
     public void init(Config.Scope config) {
         logger.info("<<<<<<<<<<<<<<<<<<<<< init >>>>>>>>>>>>>>>>>>>>>>>>");
-        federatedUserService = buildClient(PROP_USER_VALIDATION_URL);
+        externalUserService = buildClient(PROP_USER_VALIDATION_URL);
     }
 
 
-    private static FederatedUserService buildClient(String uri) {
+    private static ExternalUserService buildClient(String uri) {
         logger.info("URL : " + uri);
         ResteasyClient client = new ResteasyClientBuilder().disableTrustManager().build();
         ResteasyWebTarget resteasyWebTarget = client.target(uri);
 
         return resteasyWebTarget
-                .proxyBuilder(FederatedUserService.class)
-                .classloader(FederatedUserService.class.getClassLoader())
+                .proxyBuilder(ExternalUserService.class)
+                .classloader(ExternalUserService.class.getClassLoader())
                 .build();
     }
 }

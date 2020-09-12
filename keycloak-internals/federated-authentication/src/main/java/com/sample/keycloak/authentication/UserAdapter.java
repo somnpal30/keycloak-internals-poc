@@ -23,6 +23,7 @@ public class UserAdapter  extends AbstractUserAdapterFederatedStorage {
         super(session, realm, model);
         this.federatedUserModel = federatedUserModel;
         keycloakId = StorageId.keycloakId(model, federatedUserModel.getUsername());
+
     }
     public String getPassword() {
         return federatedUserModel.getPassword();
