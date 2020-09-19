@@ -24,6 +24,8 @@ public class UserAdapter  extends AbstractUserAdapterFederatedStorage {
         this.federatedUserModel = federatedUserModel;
         keycloakId = StorageId.keycloakId(model, federatedUserModel.getUsername());
 
+
+
     }
     public String getPassword() {
         return federatedUserModel.getPassword();
@@ -63,57 +65,67 @@ public class UserAdapter  extends AbstractUserAdapterFederatedStorage {
 
     @Override
     public void setSingleAttribute(String name, String value) {
-        if (name.equals("phone")) {
+       /* if (name.equals("phone")) {
             federatedUserModel.setPhone(value);
         } else {
             super.setSingleAttribute(name, value);
-        }
+        }*/
+        super.setSingleAttribute(name, value);
     }
 
     @Override
     public void removeAttribute(String name) {
-        if (name.equals("phone")) {
+       /* if (name.equals("phone")) {
             federatedUserModel.setPhone(null);
         } else {
             super.removeAttribute(name);
-        }
+        }*/
+        super.removeAttribute(name);
     }
 
     @Override
     public void setAttribute(String name, List<String> values) {
-        if (name.equals("phone")) {
-            federatedUserModel.setPhone(values.get(0));
-        } else {
-            super.setAttribute(name, values);
-        }
+        logger.info("*********************************************");
+        logger.info("attribute name : " + name);
+        logger.info("values  : " +  values );
+        logger.info("*********************************************");
+//        if (name.equals("phone")) {
+//            federatedUserModel.setPhone(values.get(0));
+//        } else {
+//            super.setAttribute(name, values);
+//        }
+        super.setAttribute(name, values);
     }
 
     @Override
     public String getFirstAttribute(String name) {
-        if (name.equals("phone")) {
+       /* if (name.equals("phone")) {
             return federatedUserModel.getPhone();
         } else {
             return super.getFirstAttribute(name);
-        }
+        }*/
+        return super.getFirstAttribute(name);
     }
 
     @Override
     public Map<String, List<String>> getAttributes() {
-        Map<String, List<String>> attrs = super.getAttributes();
+       /* Map<String, List<String>> attrs = super.getAttributes();
         MultivaluedHashMap<String, String> all = new MultivaluedHashMap<>();
         all.putAll(attrs);
         all.add("phone", federatedUserModel.getPhone());
-        return all;
+        return all;*/
+        return  super.getAttributes();
     }
 
     @Override
     public List<String> getAttribute(String name) {
-        if (name.equals("phone")) {
-            List<String> phone = new LinkedList<>();
-            phone.add(federatedUserModel.getPhone());
-            return phone;
-        } else {
-            return super.getAttribute(name);
-        }
+//        if (name.equals("phone")) {
+//            List<String> phone = new LinkedList<>();
+//            phone.add(federatedUserModel.getPhone());
+//            return phone;
+//        } else {
+//            return super.getAttribute(name);
+//        }
+        return super.getAttribute(name);
     }
 }

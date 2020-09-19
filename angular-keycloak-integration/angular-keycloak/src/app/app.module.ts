@@ -44,11 +44,11 @@ function initializeKeycloak(keycloak: KeycloakService) {
       config: {
         url: 'http://localhost:8181/auth',
         // realm: 'DEMOO',
-        // clientId: 'UI-APP',
-        // realm: 'SocialAuth',
-        // clientId: 'UI-APP-SOCIAL',
-        realm : 'FederatedAuthentication',
-        clientId : 'UI-APP-FED'
+         //clientId: 'UI-APP',
+         realm: 'SocialAuth',
+        clientId: 'UI-APP-SOCIAL',
+        //realm : 'FederatedAuthentication',
+        //clientId : 'UI-APP-FED'
       },
       initOptions: {
         onLoad: 'check-sso',

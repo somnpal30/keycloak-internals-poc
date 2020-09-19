@@ -3,6 +3,7 @@ package com.sample.keycloak.authentication;
 import com.sample.keycloak.rest.FederatedUserModel;
 import com.sample.keycloak.rest.FederatedUserService;
 import org.jboss.logging.Logger;
+import org.keycloak.common.util.MultivaluedHashMap;
 import org.keycloak.component.ComponentModel;
 import org.keycloak.credential.CredentialInput;
 import org.keycloak.credential.CredentialInputUpdater;
@@ -13,6 +14,7 @@ import org.keycloak.models.cache.OnUserCache;
 import org.keycloak.models.credential.PasswordCredentialModel;
 import org.keycloak.storage.StorageId;
 import org.keycloak.storage.UserStorageProvider;
+import org.keycloak.storage.federated.UserAttributeFederatedStorage;
 import org.keycloak.storage.user.UserLookupProvider;
 import org.keycloak.storage.user.UserQueryProvider;
 import org.keycloak.storage.user.UserRegistrationProvider;
@@ -25,7 +27,7 @@ public class ExternalUserStorageProvider implements UserStorageProvider,
         UserQueryProvider,
         CredentialInputUpdater,
         CredentialInputValidator,
-        OnUserCache {
+        OnUserCache/*, UserAttributeFederatedStorage */{
 
     private static final Logger logger = Logger.getLogger(ExternalUserStorageProvider.class);
     public static final String PASSWORD_CACHE_KEY = UserAdapter.class.getName() + ".password";
@@ -113,7 +115,7 @@ public class ExternalUserStorageProvider implements UserStorageProvider,
         logger.info("getUserById: " + id);
         StorageId storageId = new StorageId(id);
         String username = storageId.getExternalId();
-        //FederatedUserModel federatedUserModel = federatedUserService.getUserDetails(username);
+        FederatedUserModel federatedUserModel = federatedUserService.getUserDetails(username);
         /*UserModel userModel = keycloakSession.userLocalStorage().getUserByUsername(username,realmModel);
         if(Objects.nonNull(userModel)){
             return  userModel;
@@ -121,8 +123,24 @@ public class ExternalUserStorageProvider implements UserStorageProvider,
             //keycloakSession.userLocalStorage().addUser(realmModel,username);
              //return new UserAdapter(keycloakSession, realmModel, componentModel, getFederatedUser(username));
         }*/
-        return new UserAdapter(keycloakSession, realmModel, componentModel, getFederatedUser(username));
+        //keycloakSession.userFederatedStorage().grantRole();
+        //keycloakSession.userFederatedStorage().setAttribute(realmModel,id,"phone" , Arrays.asList("1111111111","3333333333"));
+
+        UserAdapter userAdapter = new UserAdapter(keycloakSession, realmModel, componentModel, federatedUserModel);
+
+        federatedUserModel.getAttributes().forEach((name, values) -> userAdapter.setAttribute(name,values));
+//        federatedUserModel.getRoles().forEach(role -> {
+//            userAdapter.grantRole(realmModel.addRole(role));
+//        });
+
+
+
+        return userAdapter;
     }
+
+
+
+
 
     @Override
     public UserModel getUserByUsername(String username, RealmModel realmModel) {
@@ -132,8 +150,9 @@ public class ExternalUserStorageProvider implements UserStorageProvider,
 
     @Override
     public UserModel getUserByEmail(String email, RealmModel realmModel) {
-        return null;
-        //TODO
+        logger.info("user by email : " + email);
+        return getUserByUsername(email,realmModel);
+
     }
 
     @Override
@@ -234,4 +253,30 @@ public class ExternalUserStorageProvider implements UserStorageProvider,
         return federatedUserModel;
     }
 
+  /*  @Override
+    public void setSingleAttribute(RealmModel realmModel, String id, String name, String value) {
+        logger.info("-------------------------> setSingleAttribute");
+    }
+
+    @Override
+    public void setAttribute(RealmModel realmModel, String id, String name, List<String> list) {
+        logger.info("-------------------------> setAttribute");
+    }
+
+    @Override
+    public void removeAttribute(RealmModel realmModel, String s, String s1) {
+
+    }
+
+    @Override
+    public MultivaluedHashMap<String, String> getAttributes(RealmModel realmModel, String s) {
+        logger.info("-------------------------> getAttributes");
+        return null;
+    }
+
+    @Override
+    public List<String> getUsersByUserAttribute(RealmModel realmModel, String s, String s1) {
+        logger.info("-------------------------> getUsersByUserAttribute");
+        return null;
+    }*/
 }
