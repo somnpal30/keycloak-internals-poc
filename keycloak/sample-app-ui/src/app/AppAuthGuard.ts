@@ -29,7 +29,7 @@ export class AppAuthGuard extends KeycloakAuthGuard {
         }
       }
 
-      if(granted === false) {
+      if (granted === false) {
         this.router.navigate(['/']);
       }
       resolve(granted);

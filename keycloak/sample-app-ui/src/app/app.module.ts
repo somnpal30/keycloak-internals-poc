@@ -8,8 +8,10 @@ import {MatSliderModule} from '@angular/material/slider';
 import {MatTabsModule} from '@angular/material/tabs';
 import {MatToolbarModule} from '@angular/material/toolbar';
 
-import { environment } from '../environments/environment';
+import {environment} from '../environments/environment';
 import {KeycloakAngularModule, KeycloakService} from 'keycloak-angular';
+import {HttpClientModule} from '@angular/common/http';
+
 const keycloakService: KeycloakService = new KeycloakService();
 
 
@@ -25,20 +27,26 @@ const keycloakService: KeycloakService = new KeycloakService();
     BrowserAnimationsModule,
     MatSliderModule,
     MatTabsModule,
-    MatToolbarModule
+    MatToolbarModule,
+    HttpClientModule,
   ],
-  providers: [ {
+  providers: [{
     provide: KeycloakService,
     useValue: keycloakService
-  }],
- // bootstrap: [AppComponent]
+  }/*,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: TokenInterceptor
+    }*/
+  ],
+  // bootstrap: [AppComponent]
 })
 export class AppModule implements DoBootstrap {
   async ngDoBootstrap(app) {
-    const { keycloakConfig } = environment;
+    const {keycloakConfig} = environment;
 
     try {
-      await keycloakService.init({ config: keycloakConfig });
+      await keycloakService.init({config: keycloakConfig});
       app.bootstrap(AppComponent);
     } catch (error) {
       console.error('Keycloak init failed', error);

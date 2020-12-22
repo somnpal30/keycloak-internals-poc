@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
+import {RemoteDataService} from '../../service/remote-data.service';
+import {Category} from '../../model/Category';
 
 @Component({
   selector: 'app-tab1',
@@ -7,9 +9,16 @@ import { Component, OnInit } from '@angular/core';
 })
 export class Tab1Component implements OnInit {
 
-  constructor() { }
+  catories: Category[];
+
+  constructor(private remoteDataService: RemoteDataService) {
+  }
 
   ngOnInit(): void {
+    this.remoteDataService.getMenu().subscribe(response => {
+      this.catories = response;
+      console.log(this.catories);
+    });
   }
 
 }
