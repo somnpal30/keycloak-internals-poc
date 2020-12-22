@@ -1,0 +1,21 @@
+<!--
+<a routerLink="/tab1">tab1</a>
+<a routerLink="/tab2">tab2</a>
+<a routerLink="/tab3">tab3</a>-->
+<mat-toolbar color="accent">
+  <div class="header-left"> Angular Material App With Tab and Routing</div>
+  <div class="header-right">
+    <a (click)="doLogout()" clrDropdownItem>Log out</a>
+  </div>
+
+</mat-toolbar>
+<nav mat-tab-nav-bar>
+  <a mat-tab-link
+     *ngFor="let link of navLinks"
+     [routerLink]="link.link"
+     routerLinkActive #rla="routerLinkActive"
+     [active]="rla.isActive"  >
+  {{link.label}}
+  </a>
+</nav>
+<router-outlet></router-outlet>
