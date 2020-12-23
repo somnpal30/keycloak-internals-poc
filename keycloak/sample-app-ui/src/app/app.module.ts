@@ -29,32 +29,33 @@ const keycloakService: KeycloakService = new KeycloakService();
     MatToolbarModule,
     HttpClientModule,
   ],
-  providers: [{
-    provide: KeycloakService,
-    useValue: keycloakService
-  },
+  providers: [
+   /* {
+      provide: KeycloakService,
+      useValue: keycloakService
+    },*/
     {
-    provide: APP_INITIALIZER,
-    useFactory: initializer,
-    deps: [KeycloakService],
-    multi: true
-  }/*,
+      provide: APP_INITIALIZER,
+      useFactory: initializer,
+      deps: [KeycloakService],
+      multi: true
+    }/*,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor
     }*/
   ],
-   bootstrap: [AppComponent]
+  bootstrap: [AppComponent]
 })
 export class AppModule/* implements DoBootstrap*/ {
-/*  async ngDoBootstrap(app) {
-    const {keycloakConfig} = environment;
+  /*  async ngDoBootstrap(app) {
+      const {keycloakConfig} = environment;
 
-    try {
-      await keycloakService.init({config: keycloakConfig});
-      app.bootstrap(AppComponent);
-    } catch (error) {
-      console.error('Keycloak init failed', error);
-    }
-  }*/
+      try {
+        await keycloakService.init({config: keycloakConfig});
+        app.bootstrap(AppComponent);
+      } catch (error) {
+        console.error('Keycloak init failed', error);
+      }
+    }*/
 }
