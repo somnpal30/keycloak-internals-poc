@@ -5,9 +5,9 @@
 import {KeycloakConfig} from 'keycloak-angular';
 
 const keycloakConfig: KeycloakConfig = {
-    url: 'http://localhost:8181/auth',
-    realm: 'angular',
-    clientId: 'angular-app'
+  url: 'http://localhost:8080/auth',
+  realm: 'angular',
+  clientId: 'angular-app'
 };
 
 export const environment = {

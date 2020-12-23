@@ -1,5 +1,5 @@
 import {BrowserModule} from '@angular/platform-browser';
-import {DoBootstrap, NgModule} from '@angular/core';
+import {APP_INITIALIZER, NgModule} from '@angular/core';
 
 import {AppRoutingModule, routingComponent} from './app-routing.module';
 import {AppComponent} from './app.component';
@@ -7,10 +7,9 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {MatSliderModule} from '@angular/material/slider';
 import {MatTabsModule} from '@angular/material/tabs';
 import {MatToolbarModule} from '@angular/material/toolbar';
-
-import {environment} from '../environments/environment';
 import {KeycloakAngularModule, KeycloakService} from 'keycloak-angular';
 import {HttpClientModule} from '@angular/common/http';
+import {initializer} from './service/initializer.service';
 
 const keycloakService: KeycloakService = new KeycloakService();
 
@@ -33,16 +32,22 @@ const keycloakService: KeycloakService = new KeycloakService();
   providers: [{
     provide: KeycloakService,
     useValue: keycloakService
+  },
+    {
+    provide: APP_INITIALIZER,
+    useFactory: initializer,
+    deps: [KeycloakService],
+    multi: true
   }/*,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor
     }*/
   ],
-  // bootstrap: [AppComponent]
+   bootstrap: [AppComponent]
 })
-export class AppModule implements DoBootstrap {
-  async ngDoBootstrap(app) {
+export class AppModule/* implements DoBootstrap*/ {
+/*  async ngDoBootstrap(app) {
     const {keycloakConfig} = environment;
 
     try {
@@ -51,5 +56,5 @@ export class AppModule implements DoBootstrap {
     } catch (error) {
       console.error('Keycloak init failed', error);
     }
-  }
+  }*/
 }

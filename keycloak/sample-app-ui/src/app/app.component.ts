@@ -8,12 +8,13 @@ import {KeycloakService} from 'keycloak-angular';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit{
+export class AppComponent implements OnInit {
   title = 'angular-material-tab-router';
   navLinks: any[];
   activeLinkIndex = -1;
   userDetails: KeycloakProfile;
-  constructor(private router: Router,private keycloakService: KeycloakService) {
+
+  constructor(private router: Router, private keycloakService: KeycloakService) {
     this.navLinks = [
       {
         label: 'Tab 1',

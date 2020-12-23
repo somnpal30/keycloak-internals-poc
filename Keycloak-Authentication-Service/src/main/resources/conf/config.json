@@ -1,0 +1,11 @@
+{
+  "http.port": 8888,
+  "realm": "DEMOO",
+  "auth-server-url": "http://localhost:8181/auth/",
+  "ssl-required": "external",
+  "resource": "UI-APP",
+  "public-client": true,
+  "verify-token-audience": true,
+  "use-resource-role-mappings": true,
+  "confidential-port": 0
+}
