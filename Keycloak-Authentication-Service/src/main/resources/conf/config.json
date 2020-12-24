@@ -1,11 +1,15 @@
 {
   "http.port": 8888,
-  "realm": "DEMOO",
-  "auth-server-url": "http://localhost:8181/auth/",
-  "ssl-required": "external",
-  "resource": "UI-APP",
-  "public-client": true,
-  "verify-token-audience": true,
-  "use-resource-role-mappings": true,
-  "confidential-port": 0
+  "keycloak-config": {
+    "realm": "angular",
+    "auth-server-url": "http://localhost:8080/auth/",
+    "ssl-required": "external",
+    "resource": "vert.x",
+    "verify-token-audience": true,
+    "credentials": {
+      "secret": "b15a065e-8bc3-4ba4-821e-e5f1d5725db7"
+    },
+    "confidential-port": 0,
+    "policy-enforcer": {}
+  }
 }

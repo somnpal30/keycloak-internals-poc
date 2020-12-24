@@ -2,6 +2,8 @@ package com.comviva.verticle;
 
 import io.vertx.config.ConfigRetriever;
 import io.vertx.core.AbstractVerticle;
+import io.vertx.core.eventbus.DeliveryOptions;
+import io.vertx.core.eventbus.ReplyException;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
@@ -39,7 +41,21 @@ public class RestServiceVerticle extends AbstractVerticle {
     log.info("Request Receive...");
     JsonObject jsonObject = new JsonObject();
     jsonObject.put("token", "eeeeeee");
-    routingContext.response().putHeader("content-type", "application/json").setStatusCode(200)
-      .end(jsonObject.toString());
+    DeliveryOptions options = new DeliveryOptions();
+
+
+    vertx.eventBus().request("GET_TOKEN", jsonObject, options, messageAsyncResult -> {
+      if (messageAsyncResult.succeeded()) {
+        JsonObject jsonObject1 = (JsonObject) messageAsyncResult.result().body();
+        routingContext.response().putHeader("content-type", "application/json").setStatusCode(200)
+          .end(jsonObject1.toString());
+      } else {
+        ReplyException replyException = (ReplyException) messageAsyncResult.cause();
+        routingContext.response().putHeader("content-type", "application/json")
+          .setStatusCode(replyException.failureCode()).end(replyException.getMessage());
+      }
+    });
+
+
   }
 }

@@ -1,5 +1,6 @@
 package com.comviva;
 
+import com.comviva.verticle.KeycloakServiceVerticle;
 import com.comviva.verticle.RestServiceVerticle;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
@@ -12,7 +13,7 @@ import java.util.List;
 
 public class MainVerticle extends AbstractVerticle {
   private final Logger logger = LoggerFactory.getLogger(MainVerticle.class);
-  List<AbstractVerticle> verticleList = Arrays.asList(new RestServiceVerticle());
+  List<AbstractVerticle> verticleList = Arrays.asList(new RestServiceVerticle(), new KeycloakServiceVerticle());
 
   @Override
   public void start(Promise<Void> startPromise) throws Exception {
