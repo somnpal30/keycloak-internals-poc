@@ -37,6 +37,15 @@ public class FederatedUserModel implements Serializable
     private Set<String> roles;
     private String password;
     private String phone;
+   /* private String otpRequired;
+
+    public String getOtpRequired() {
+        return otpRequired;
+    }
+
+    public void setOtpRequired(String otpRequired) {
+        this.otpRequired = otpRequired;
+    }*/
 
     public String getPhone() {
         return phone;

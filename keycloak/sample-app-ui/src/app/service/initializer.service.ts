@@ -1,5 +1,5 @@
-import {KeycloakService} from 'keycloak-angular';
-import {environment as env} from '../../environments/environment';
+import { KeycloakService } from 'keycloak-angular';
+import { environment as env } from '../../environments/environment';
 
 
 export function initializer(keycloak: KeycloakService): () => Promise<any> {
@@ -14,9 +14,12 @@ export function initializer(keycloak: KeycloakService): () => Promise<any> {
           },
           loadUserProfileAtStartUp: true,
           initOptions: {
-            onLoad: 'login-required'
+            onLoad: 'login-required',
+            redirectUri: 'http://localhost:8888/auth-api/redirect',
+            responseMode: 'query',
+            enableLogging: true
           },
-          bearerExcludedUrls: []
+          bearerExcludedUrls: [],
         });
         resolve();
       } catch (error) {

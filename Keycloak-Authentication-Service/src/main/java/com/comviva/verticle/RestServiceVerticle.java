@@ -21,6 +21,7 @@ public class RestServiceVerticle extends AbstractVerticle {
 
     router.route("/auth-api/*").handler(BodyHandler.create());
     router.get("/auth-api/token").handler(this::getToken);
+    router.get("/auth-api/redirect").handler(this::redirect);
 
     ConfigRetriever retriever = ConfigRetriever.create(vertx);
     retriever.getConfig(json -> {
@@ -35,6 +36,21 @@ public class RestServiceVerticle extends AbstractVerticle {
           }
         });
     });
+  }
+
+  private void redirect(RoutingContext routingContext){
+    log.info("url hit....");
+    log.info(routingContext.request().query());
+    JsonObject jsonObject = new JsonObject();
+    routingContext.request().params().forEach(e -> {
+      log.info(e.getKey() + " :: " + e.getValue());
+      jsonObject.put(e.getKey(),e.getValue());
+    });
+
+
+
+    //routingContext.redirect("http://localhost:4200?"+ routingContext.request().query());
+
   }
 
   private void getToken(RoutingContext routingContext) {

@@ -22,7 +22,7 @@ public class MainVerticle extends AbstractVerticle {
         if (response.failed()) {
           logger.info("unable to deploy verticle :: " + verticle.getClass().getSimpleName() + " : " + response.cause());
         } else {
-          logger.info("All verticles deployed ::");
+          logger.info("All verticles deployed ::" + verticle.deploymentID());
         }
       });
     });

@@ -1,9 +1,7 @@
 package com.sample.keycloak.authentication;
 
 import com.sample.keycloak.rest.FederatedUserModel;
-import com.sample.keycloak.rest.FederatedUserService;
 import org.jboss.logging.Logger;
-import org.keycloak.common.util.MultivaluedHashMap;
 import org.keycloak.component.ComponentModel;
 import org.keycloak.credential.CredentialInput;
 import org.keycloak.credential.CredentialInputUpdater;
@@ -14,12 +12,12 @@ import org.keycloak.models.cache.OnUserCache;
 import org.keycloak.models.credential.PasswordCredentialModel;
 import org.keycloak.storage.StorageId;
 import org.keycloak.storage.UserStorageProvider;
-import org.keycloak.storage.federated.UserAttributeFederatedStorage;
 import org.keycloak.storage.user.UserLookupProvider;
 import org.keycloak.storage.user.UserQueryProvider;
 import org.keycloak.storage.user.UserRegistrationProvider;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 public class ExternalUserStorageProvider implements UserStorageProvider,
         UserLookupProvider,
@@ -27,7 +25,7 @@ public class ExternalUserStorageProvider implements UserStorageProvider,
         UserQueryProvider,
         CredentialInputUpdater,
         CredentialInputValidator,
-        OnUserCache/*, UserAttributeFederatedStorage */{
+        OnUserCache/*, UserAttributeFederatedStorage */ {
 
     private static final Logger logger = Logger.getLogger(ExternalUserStorageProvider.class);
     public static final String PASSWORD_CACHE_KEY = UserAdapter.class.getName() + ".password";
@@ -111,12 +109,31 @@ public class ExternalUserStorageProvider implements UserStorageProvider,
     public void close() {
 
     }
-
+    public  void logHeaderData(RealmModel realmModel)
+    {
+        /*
+        Map<String, String> browserHeaders = realmModel.getBrowserSecurityHeaders();
+        browserHeaders.keySet().stream().forEach(e -> {
+            logger.info("key : " + e + " value : " + browserHeaders.get(e));
+        });
+        */
+        //https://www.keycloak.org/docs/latest/authorization_services/#the-evaluation-context
+        logger.info("----------------------------------------------------");
+        logger.info("User-Agent : " + keycloakSession.getContext().getRequestHeaders().getRequestHeader("User-Agent"));
+        logger.info("X-Correlation-ID : " + keycloakSession.getContext().getRequestHeaders().getRequestHeader("X-Correlation-ID"));
+        logger.info("X-Forwarded-Host : " + keycloakSession.getContext().getRequestHeaders().getRequestHeader("X-Forwarded-Host"));
+        logger.info("kc.client.network.ip_address : " + keycloakSession.getContext().getConnection().getRemoteAddr());
+        logger.info("kc.client.network.host : " + this.keycloakSession.getContext().getConnection().getRemoteHost());
+        logger.info("----------------------------------------------------");
+    }
     @Override
     public UserModel getUserById(String id, RealmModel realmModel) {
         logger.info("getUserById: " + id);
         StorageId storageId = new StorageId(id);
         String username = storageId.getExternalId();
+
+        logHeaderData(realmModel);
+
         FederatedUserModel federatedUserModel = federatedUserService.getUserDetails(username);
         /*UserModel userModel = keycloakSession.userLocalStorage().getUserByUsername(username,realmModel);
         if(Objects.nonNull(userModel)){
@@ -130,18 +147,26 @@ public class ExternalUserStorageProvider implements UserStorageProvider,
 
         UserAdapter userAdapter = new UserAdapter(keycloakSession, realmModel, componentModel, federatedUserModel);
 
-        federatedUserModel.getAttributes().forEach((name, values) -> userAdapter.setAttribute(name,values));
-//        federatedUserModel.getRoles().forEach(role -> {
-//            userAdapter.grantRole(realmModel.addRole(role));
-//        });
+        federatedUserModel.getAttributes().forEach((name, values) -> userAdapter.setAttribute(name, values));
+
+        logger.info(realmModel.getRole("OTP_REQUIRED"));
+        //userAdapter.getRoleMappings().add(realmModel.getRole("OTP_REQUIRED"));
+
+        Optional<String> optRole =  federatedUserModel.getRoles().stream().filter(Predicate.isEqual("OTP_REQUIRED")).findFirst();
+        if(optRole.isPresent()){
+            logger.info("1");
+           //userAdapter.getRoleMappings().add(realmModel.getRole("OTP_REQUIRED"));
+           userAdapter.getRealmRoleMappings().add(realmModel.getRole("OTP_REQUIRED"));
+        }else {
+            logger.info("2");
+        }
+
+
 
 
 
         return userAdapter;
     }
-
-
-
 
 
     @Override
@@ -153,7 +178,7 @@ public class ExternalUserStorageProvider implements UserStorageProvider,
     @Override
     public UserModel getUserByEmail(String email, RealmModel realmModel) {
         logger.info("user by email : " + email);
-        return getUserByUsername(email,realmModel);
+        return getUserByUsername(email, realmModel);
 
     }
 
@@ -245,7 +270,7 @@ public class ExternalUserStorageProvider implements UserStorageProvider,
     public FederatedUserModel getFederatedUser(String username) {
         FederatedUserModel federatedUserModel = null;
         if (loadedUsers.containsKey(username)) {
-              federatedUserModel = loadedUsers.get(username);
+            federatedUserModel = loadedUsers.get(username);
         } else {
             logger.info("2");
             federatedUserModel = federatedUserService.getUserDetails(username);

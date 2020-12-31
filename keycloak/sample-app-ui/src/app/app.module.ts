@@ -11,6 +11,7 @@ import {KeycloakAngularModule, KeycloakService} from 'keycloak-angular';
 import {HttpClientModule} from '@angular/common/http';
 import {initializer} from './service/initializer.service';
 
+
 const keycloakService: KeycloakService = new KeycloakService();
 
 

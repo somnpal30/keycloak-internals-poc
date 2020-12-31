@@ -73,7 +73,7 @@ public class RemoteUserFederationProvider implements
     @Override
     public boolean isValid(RealmModel realmModel, UserModel userModel, CredentialInput credentialInput) {
         UserCredentialModel cred = (UserCredentialModel) credentialInput;
-        logger.info(userModel.getAttributes().containsKey("ssn"));
+        logger.info(userModel.getAttributes().containsKey(""));
         logger.info(userModel.getAttributes().containsKey("phone"));
 
         StorageId storageId = new StorageId(userModel.getId());
