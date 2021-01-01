@@ -3,7 +3,7 @@ import {KeycloakAuthGuard, KeycloakService} from 'keycloak-angular';
 import {ActivatedRouteSnapshot, Router, RouterStateSnapshot} from '@angular/router';
 
 @Injectable()
-export class AppAuthGuard extends KeycloakAuthGuard {
+export class LoggedInGuard extends KeycloakAuthGuard {
   constructor(protected router: Router, protected keycloakAngular: KeycloakService) {
     super(router, keycloakAngular);
   }
