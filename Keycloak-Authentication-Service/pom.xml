@@ -22,7 +22,7 @@
     <vertx.version>4.0.0</vertx.version>
     <junit-jupiter.version>5.4.0</junit-jupiter.version>
 
-    <main.verticle>com.comviva.MainVerticle</main.verticle>
+    <main.verticle>com.sample.MainVerticle</main.verticle>
   </properties>
 
   <dependencyManagement>
@@ -46,11 +46,7 @@
       <groupId>io.vertx</groupId>
       <artifactId>vertx-config</artifactId>
     </dependency>
-    <dependency>
-      <groupId>io.vertx</groupId>
-      <artifactId>vertx-auth-oauth2</artifactId>
-    <!--  <version>4.0.1-SNAPSHOT</version>-->
-    </dependency>
+
     <dependency>
       <groupId>io.vertx</groupId>
       <artifactId>vertx-junit5</artifactId>

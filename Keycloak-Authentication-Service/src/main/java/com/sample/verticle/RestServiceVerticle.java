@@ -1,4 +1,4 @@
-package com.comviva.verticle;
+package com.sample.verticle;
 
 import io.vertx.config.ConfigRetriever;
 import io.vertx.core.AbstractVerticle;
@@ -15,6 +15,7 @@ import io.vertx.ext.web.sstore.SessionStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.UUID;
 
 public class RestServiceVerticle extends AbstractVerticle {
@@ -28,8 +29,12 @@ public class RestServiceVerticle extends AbstractVerticle {
   @Override
   public void start() throws Exception {
     Router router = Router.router(vertx);
+
     store = LocalSessionStore.create(vertx, "keycloak-session-store", 30000);
-    router.route().handler(CorsHandler.create(".*."));
+    router.route().handler(CorsHandler.create(".*.")).failureHandler(routingContext -> {
+      log.error("", routingContext.failure());
+      routingContext.response().setStatusCode(500).end("Server processing failure");
+    });
      /* .allowedMethod(io.vertx.core.http.HttpMethod.GET)
       .allowedMethod(io.vertx.core.http.HttpMethod.POST)
       .allowedMethod(io.vertx.core.http.HttpMethod.OPTIONS)
@@ -61,14 +66,8 @@ public class RestServiceVerticle extends AbstractVerticle {
   }
 
   private void otpValidator(RoutingContext routingContext) {
-   /* log.info("session :"+routingContext.request().getParam(_SESSION));
-    log.info("prng : "+routingContext.request().getParam(_UID));
-    log.info("otp : "+routingContext.request().getParam(_UID));*/
-    JsonObject jsonObject = routingContext.getBodyAsJson();
-    log.info("session :" + jsonObject.getString(_SESSION));
-    log.info("prng : " + jsonObject.getString(_UID));
-    log.info("otp : " + jsonObject.getString("otp"));
 
+    JsonObject jsonObject = routingContext.getBodyAsJson();
 
     store.get(jsonObject.getString(_SESSION), sessionAsyncResult -> {
       if (sessionAsyncResult.succeeded()) {
@@ -76,38 +75,82 @@ public class RestServiceVerticle extends AbstractVerticle {
         log.info(session.get(jsonObject.getString(_UID)));
         log.info("http://localhost:4200?" + session.get(jsonObject.getString(_UID)));
 
-        JsonObject jsonObject1 = new JsonObject();
-        jsonObject1.put("location","http://localhost:4200?" + session.get(jsonObject.getString(_UID)));
-        routingContext.response().setStatusCode(200).putHeader("content-type", "application/json").end(jsonObject1.toString());
+        JsonObject requestParam = getOTPObject(jsonObject.getString("otp"), session.get(jsonObject.getString(_UID)));
+
+        validateOTP(routingContext, requestParam, session.get(jsonObject.getString(_UID)));
 
       } else {
         log.error("no session available for id " + jsonObject.getString(_SESSION));
         routingContext.response().setStatusCode(500);
       }
     });
-    //routingContext.response().setStatusCode(200).end(new JsonObject().put("message","hello").toString());
+
   }
+
+  private void validateOTP(RoutingContext context, JsonObject requestObject, String queryParam) {
+    vertx.eventBus().request("OTP_VALIDATE", requestObject, messageAsyncResult -> {
+      if (messageAsyncResult.succeeded()) {
+        log.info(" otp status : " + messageAsyncResult.result().body());
+        if ("retry".equals(messageAsyncResult.result().body())) {
+          context.response().setStatusCode(500).end("Please retry !");
+        } else {
+          JsonObject jsonObject1 = new JsonObject();
+          jsonObject1.put("location", "http://localhost:4200?" + queryParam);
+          context.response().setStatusCode(200).putHeader("content-type", "application/json").end(jsonObject1.toString());
+        }
+
+
+      } else {
+        vertx.eventBus().request("INVALIDATE_KC_SESSION", requestObject, reply -> {
+         /* if (reply.succeeded()) {
+            ReplyException replyException = (ReplyException) messageAsyncResult.cause();
+            log.warn(replyException.getMessage());
+            context.response().setStatusCode(replyException.failureCode()).end(replyException.getMessage());
+          } else {
+            context.response().setStatusCode(500).end("Server Processing Failure");
+          }*/
+          log.info("Message from KC Verticle" + reply.result().body());
+          JsonObject jsonObject1 = new JsonObject();
+          jsonObject1.put("location", "http://localhost:4200");
+          context.response().setStatusCode(200).putHeader("content-type", "application/json").end(jsonObject1.toString());
+        });
+
+      }
+
+    });
+  }
+
 
   private void redirect(RoutingContext routingContext) {
     log.info("url hit....");
     log.info(routingContext.request().query());
 
-    if(routingContext.request().query()==null){
+    if (routingContext.request().query() == null) {
       routingContext.redirect("http://localhost:4200");
-    }else{
-      JsonObject jsonObject = new JsonObject();
-      StringBuilder sb = new StringBuilder("");
+    } else {
+      JsonObject requestParam = new JsonObject();
+      routingContext.request().params().forEach(param -> {
+        requestParam.put(param.getKey(), param.getValue());
+      });
+      vertx.eventBus().request("OTP_GENERATE", requestParam, new DeliveryOptions(), responseAsync -> {
+        if (responseAsync.succeeded()) {
+          JsonObject responseObj = (JsonObject) responseAsync.result().body();
 
-      String url = "http://localhost:4300/otp?%s=%s&%s=%s";
+          log.info("OTP generated " + responseObj.getString("otp"));
 
-      String uuid = UUID.randomUUID().toString();
-      Session session = store.createSession(600000);
-      session.put(uuid, routingContext.request().query());
+          String url = "http://localhost:4300/otp?%s=%s&%s=%s";
+          String uuid = UUID.randomUUID().toString();
 
-      store.put(session);
-      log.info(String.format(url, _SESSION, session.id(), _UID, uuid));
-      //routingContext.redirect("http://localhost:4200?" + routingContext.request().query());
-      routingContext.redirect(String.format(url, _SESSION, session.id(), _UID, uuid));
+          Session session = store.createSession(600000);
+          session.put(uuid, routingContext.request().query());
+
+          store.put(session);
+          log.info(String.format(url, _SESSION, session.id(), _UID, uuid));
+
+          routingContext.redirect(String.format(url, _SESSION, session.id(), _UID, uuid));
+        }
+      });
+
     }
 
   }
@@ -130,7 +173,16 @@ public class RestServiceVerticle extends AbstractVerticle {
           .setStatusCode(replyException.failureCode()).end(replyException.getMessage());
       }
     });
+  }
 
+  private JsonObject getOTPObject(String otp, String queryParam) {
+    JsonObject requestParam = new JsonObject();
+    requestParam.put("otp", otp);
+    Arrays.stream(queryParam.split("&")).forEach(e -> {
+      String[] param = e.split("=");
+      requestParam.put(param[0], param[1]);
+    });
 
+    return requestParam;
   }
 }

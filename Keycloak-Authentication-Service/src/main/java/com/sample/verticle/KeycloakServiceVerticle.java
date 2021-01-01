@@ -1,4 +1,4 @@
-package com.comviva.verticle;
+package com.sample.verticle;
 
 import io.vertx.config.ConfigRetriever;
 import io.vertx.core.AbstractVerticle;
@@ -34,7 +34,14 @@ public class KeycloakServiceVerticle extends AbstractVerticle {
         .username("user1").password("password")
         .build();
       vertx.eventBus().consumer("GET_TOKEN", this::getToken);
+      vertx.eventBus().consumer("INVALIDATE_KC_SESSION", this::invalidateSession);
     });
+  }
+
+  private void invalidateSession(Message message){
+    JsonObject jsonObject = (JsonObject) message.body();
+    log.info(">>>" + jsonObject);
+    message.reply("session invalidated due to wrong OTP. Please re-login");
   }
 
   private void getToken(Message msg) {
