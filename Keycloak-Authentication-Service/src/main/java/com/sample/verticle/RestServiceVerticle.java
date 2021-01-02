@@ -57,7 +57,7 @@ public class RestServiceVerticle extends AbstractVerticle {
         .requestHandler(router)
         .listen(config.getInteger("http.port"), httpServerAsyncResult -> {
           if (httpServerAsyncResult.succeeded()) {
-            log.info("server running at {}", config.getInteger("http.port"));
+            log.debug("server running at {}", config.getInteger("http.port"));
           } else {
             log.warn("", httpServerAsyncResult.cause());
           }
@@ -72,11 +72,12 @@ public class RestServiceVerticle extends AbstractVerticle {
     store.get(jsonObject.getString(_SESSION), sessionAsyncResult -> {
       if (sessionAsyncResult.succeeded()) {
         Session session = sessionAsyncResult.result();
-        log.info(session.get(jsonObject.getString(_UID)));
-        log.info("http://localhost:4200?" + session.get(jsonObject.getString(_UID)));
+        log.debug(session.get(jsonObject.getString(_UID)));
+        log.debug("http://localhost:4200?" + session.get(jsonObject.getString(_UID)));
 
         JsonObject requestParam = getOTPObject(jsonObject.getString("otp"), session.get(jsonObject.getString(_UID)));
 
+        // ################Validating OTP here ########################################
         validateOTP(routingContext, requestParam, session.get(jsonObject.getString(_UID)));
 
       } else {
@@ -90,7 +91,7 @@ public class RestServiceVerticle extends AbstractVerticle {
   private void validateOTP(RoutingContext context, JsonObject requestObject, String queryParam) {
     vertx.eventBus().request("OTP_VALIDATE", requestObject, messageAsyncResult -> {
       if (messageAsyncResult.succeeded()) {
-        log.info(" otp status : " + messageAsyncResult.result().body());
+        log.debug(" otp status : " + messageAsyncResult.result().body());
         if ("retry".equals(messageAsyncResult.result().body())) {
           context.response().setStatusCode(500).end("Please retry !");
         } else {
@@ -109,7 +110,7 @@ public class RestServiceVerticle extends AbstractVerticle {
           } else {
             context.response().setStatusCode(500).end("Server Processing Failure");
           }*/
-          log.info("Message from KC Verticle" + reply.result().body());
+          log.debug("Message from KC Verticle" + reply.result().body());
           JsonObject jsonObject1 = new JsonObject();
           jsonObject1.put("location", "http://localhost:4200");
           context.response().setStatusCode(200).putHeader("content-type", "application/json").end(jsonObject1.toString());
@@ -123,7 +124,7 @@ public class RestServiceVerticle extends AbstractVerticle {
 
   private void redirect(RoutingContext routingContext) {
     log.info("url hit....");
-    log.info(routingContext.request().query());
+    log.debug(routingContext.request().query());
 
     if (routingContext.request().query() == null) {
       routingContext.redirect("http://localhost:4200");

@@ -20,13 +20,13 @@ public class OTPServiceVerticle extends AbstractVerticle {
   private void generateOTP(Message msg) {
     JsonObject otpEntries = new JsonObject();
     otpEntries.put("otp", getOtp());
-    log.info("otp generated ::" + otpEntries.encodePrettily());
+    log.debug("otp generated ::" + otpEntries.encodePrettily());
     msg.reply(otpEntries);
   }
 
   private void validateOTP(Message msg) {
     JsonObject jsonObject = (JsonObject) msg.body();
-    log.info(jsonObject.encodePrettily());
+    log.debug(jsonObject.encodePrettily());
     String otp = jsonObject.getString("otp");
 
     if(otp.endsWith("00")){

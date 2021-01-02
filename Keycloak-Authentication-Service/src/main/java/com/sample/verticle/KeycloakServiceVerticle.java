@@ -31,8 +31,9 @@ public class KeycloakServiceVerticle extends AbstractVerticle {
         .grantType(OAuth2Constants.PASSWORD)
         .clientId(config.getString("resource"))
         .clientSecret(config.getJsonObject("credentials").getString("secret"))
-        .username("user1").password("password")
+        .username("superadmin").password("password")
         .build();
+
       vertx.eventBus().consumer("GET_TOKEN", this::getToken);
       vertx.eventBus().consumer("INVALIDATE_KC_SESSION", this::invalidateSession);
     });
@@ -40,7 +41,10 @@ public class KeycloakServiceVerticle extends AbstractVerticle {
 
   private void invalidateSession(Message message){
     JsonObject jsonObject = (JsonObject) message.body();
-    log.info(">>>" + jsonObject);
+    log.debug(">>>" + jsonObject);
+
+    keycloak.realm("angular").deleteSession(jsonObject.getString("session_state"));
+
     message.reply("session invalidated due to wrong OTP. Please re-login");
   }
 
