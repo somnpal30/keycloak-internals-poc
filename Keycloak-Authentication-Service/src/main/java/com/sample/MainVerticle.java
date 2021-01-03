@@ -3,6 +3,7 @@ package com.sample;
 import com.sample.verticle.KeycloakServiceVerticle;
 import com.sample.verticle.OTPServiceVerticle;
 import com.sample.verticle.RestServiceVerticle;
+import com.sample.verticle.ServiceProxyRegisterVerticle;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
@@ -14,16 +15,16 @@ import java.util.List;
 
 public class MainVerticle extends AbstractVerticle {
   private final Logger logger = LoggerFactory.getLogger(MainVerticle.class);
-  List<AbstractVerticle> verticleList = Arrays.asList(new RestServiceVerticle(), new KeycloakServiceVerticle(),new OTPServiceVerticle());
+  List<AbstractVerticle> verticleList = Arrays.asList(new ServiceProxyRegisterVerticle(),new RestServiceVerticle(), new KeycloakServiceVerticle(),new OTPServiceVerticle());
 
   @Override
   public void start(Promise<Void> startPromise) throws Exception {
     verticleList.stream().forEach(verticle -> {
       vertx.deployVerticle(verticle, response -> {
         if (response.failed()) {
-          logger.info("unable to deploy verticle :: " + verticle.getClass().getSimpleName() + " : " + response.cause());
+          logger.error("unable to deploy verticle :: " + verticle.getClass().getSimpleName() + " : " + response.cause());
         } else {
-          logger.info("All verticles deployed ::" + verticle.deploymentID());
+          logger.info("Verticles deployed ::" + verticle.getClass().getSimpleName());
         }
       });
     });
