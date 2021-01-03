@@ -2,18 +2,16 @@ package com.sample.keycloak.authentication;
 
 import com.sample.keycloak.rest.FederatedUserModel;
 import org.jboss.logging.Logger;
-import org.keycloak.common.util.MultivaluedHashMap;
 import org.keycloak.component.ComponentModel;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 import org.keycloak.storage.StorageId;
 import org.keycloak.storage.adapter.AbstractUserAdapterFederatedStorage;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class UserAdapter  extends AbstractUserAdapterFederatedStorage {
+public class UserAdapter extends AbstractUserAdapterFederatedStorage {
 
     private static final Logger logger = Logger.getLogger(UserAdapter.class);
     protected String keycloakId;
@@ -25,8 +23,8 @@ public class UserAdapter  extends AbstractUserAdapterFederatedStorage {
         keycloakId = StorageId.keycloakId(model, federatedUserModel.getUsername());
 
 
-
     }
+
     public String getPassword() {
         return federatedUserModel.getPassword();
     }
@@ -46,7 +44,6 @@ public class UserAdapter  extends AbstractUserAdapterFederatedStorage {
 
     }
 
-   
 
     @Override
     public void setEmail(String email) {
@@ -87,7 +84,7 @@ public class UserAdapter  extends AbstractUserAdapterFederatedStorage {
     public void setAttribute(String name, List<String> values) {
         logger.info("*********************************************");
         logger.info("attribute name : " + name);
-        logger.info("values  : " +  values );
+        logger.info("values  : " + values);
         logger.info("*********************************************");
 //        if (name.equals("phone")) {
 //            federatedUserModel.setPhone(values.get(0));
@@ -114,7 +111,7 @@ public class UserAdapter  extends AbstractUserAdapterFederatedStorage {
         all.putAll(attrs);
         all.add("phone", federatedUserModel.getPhone());
         return all;*/
-        return  super.getAttributes();
+        return super.getAttributes();
     }
 
     @Override
@@ -128,4 +125,7 @@ public class UserAdapter  extends AbstractUserAdapterFederatedStorage {
 //        }
         return super.getAttribute(name);
     }
+
+
+
 }

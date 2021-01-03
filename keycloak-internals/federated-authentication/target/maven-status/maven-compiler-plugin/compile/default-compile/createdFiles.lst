@@ -1,0 +1,17 @@
+com\sample\keycloak\rest\FedUserModel.class
+com\sample\keycloak\authentication\ExtUserFederatedStorageProviderFactory.class
+com\sample\keycloak\rest\RemoteUserFederationProvider.class
+com\sample\keycloak\authenticator\MyAuthenticator.class
+com\sample\keycloak\ConditionalOtpFormAuthenticatorFactory.class
+com\sample\keycloak\rest\FederatedUserModel.class
+com\sample\keycloak\authentication\ExternalUserStorageProvider.class
+com\sample\keycloak\rest\RemoteUserAdapter.class
+com\sample\keycloak\rest\UserCredentialsDto.class
+com\sample\keycloak\rest\RemoteUserFederationProvider$1.class
+com\sample\keycloak\rest\RemoteRoleModel.class
+com\sample\keycloak\authentication\ExternalUserStorageProviderFactory.class
+com\sample\keycloak\rest\FederatedUserService.class
+com\sample\keycloak\authentication\ExternalUserService.class
+com\sample\keycloak\authentication\ExtUserFederatedStorageProvider.class
+com\sample\keycloak\authentication\UserAdapter.class
+com\sample\keycloak\rest\RemoteUserFederationProviderFactory.class

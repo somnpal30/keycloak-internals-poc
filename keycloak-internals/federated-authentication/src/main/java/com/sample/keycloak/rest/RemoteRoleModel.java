@@ -3,10 +3,9 @@ package com.sample.keycloak.rest;
 import org.keycloak.models.RoleContainerModel;
 import org.keycloak.models.RoleModel;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.stream.Stream;
 
 public class RemoteRoleModel implements RoleModel {
     String id;
@@ -53,7 +52,7 @@ public class RemoteRoleModel implements RoleModel {
     }
 
     @Override
-    public Set<RoleModel> getComposites() {
+    public Stream<RoleModel> getCompositesStream() {
         return null;
     }
 
@@ -83,7 +82,7 @@ public class RemoteRoleModel implements RoleModel {
     }
 
     @Override
-    public void setAttribute(String s, Collection<String> collection) {
+    public void setAttribute(String s, List<String> list) {
 
     }
 
@@ -93,12 +92,7 @@ public class RemoteRoleModel implements RoleModel {
     }
 
     @Override
-    public String getFirstAttribute(String s) {
-        return null;
-    }
-
-    @Override
-    public List<String> getAttribute(String s) {
+    public Stream<String> getAttributeStream(String s) {
         return null;
     }
 

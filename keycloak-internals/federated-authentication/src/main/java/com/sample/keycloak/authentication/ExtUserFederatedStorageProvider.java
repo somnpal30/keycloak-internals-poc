@@ -6,7 +6,6 @@ import org.keycloak.component.ComponentModel;
 import org.keycloak.credential.CredentialModel;
 import org.keycloak.models.*;
 import org.keycloak.storage.federated.UserFederatedStorageProvider;
-import org.slf4j.ILoggerFactory;
 
 import java.util.List;
 import java.util.Set;

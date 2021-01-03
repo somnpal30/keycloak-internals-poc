@@ -16,11 +16,9 @@
 package com.sample.keycloak.authentication;
 
 import com.sample.keycloak.rest.FederatedUserModel;
-import com.sample.keycloak.rest.UserCredentialsDto;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 /**
  * Federated user service.
@@ -29,17 +27,18 @@ import javax.ws.rs.core.Response;
  */
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public interface ExternalUserService
-{
+public interface ExternalUserService {
     @GET
     @Path("/auth-service/auth/v1/user/{username}")
     FederatedUserModel getUserDetails(@PathParam("username") String username);
 
-    @HEAD
+    //FederatedUserModel getUserDetails(@HeaderParam("User-Agent") String userAgent, @PathParam("username") String username);
+
+    /*@HEAD
     @Path("/auth-service/auth/v1/user/{username}/")
     Response validateUserExists(@PathParam("username") String username);
 
     @POST
     @Path("/auth-service/auth/v1/user/{username}/")
-    Boolean validateLogin(@PathParam("username") String username, UserCredentialsDto passwordDto);
+    Boolean validateLogin(@PathParam("username") String username, UserCredentialsDto passwordDto);*/
 }
