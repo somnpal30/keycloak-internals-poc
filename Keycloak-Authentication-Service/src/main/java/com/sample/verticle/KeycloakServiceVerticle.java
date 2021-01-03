@@ -1,12 +1,10 @@
 package com.sample.verticle;
 
-import com.sample.service.OTPService;
 import io.vertx.config.ConfigRetriever;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonObject;
-import io.vertx.serviceproxy.ServiceProxyBuilder;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
@@ -21,7 +19,7 @@ public class KeycloakServiceVerticle extends AbstractVerticle {
     @Override
     public void start(Promise<Void> startPromise) throws Exception {
 
-       //keycloak = KeycloakBuilder.builder().build();
+        //keycloak = KeycloakBuilder.builder().build();
 
         ConfigRetriever retriever = ConfigRetriever.create(vertx);
         retriever.getConfig(json -> {

@@ -1,11 +1,10 @@
 package com.sample.verticle;
 
+import com.sample.service.KeycloakService;
 import com.sample.service.OTPService;
 import io.vertx.config.ConfigRetriever;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
-import io.vertx.core.eventbus.DeliveryOptions;
-import io.vertx.core.eventbus.ReplyException;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
@@ -25,15 +24,14 @@ public class RestServiceVerticle extends AbstractVerticle {
     private final Logger log = LoggerFactory.getLogger(RestServiceVerticle.class);
     SessionStore store = null;
     OTPService otpService;
+    KeycloakService keycloakService;
     String _SESSION = "session_state";
     String _UID = "prng";
 
     @Override
     public void start(Promise<Void> startPromise) throws Exception {
         otpService = OTPService.create(vertx, "otp.service");
-
-       /* ServiceProxyBuilder otpServiceProxyBuilder = new ServiceProxyBuilder(vertx).setAddress("otp.service");
-        OTPService service = otpServiceProxyBuilder.build(OTPService.class);*/
+        keycloakService = KeycloakService.create(vertx, "keycloak.service");
 
         Router router = Router.router(vertx);
 
@@ -44,7 +42,7 @@ public class RestServiceVerticle extends AbstractVerticle {
         });
 
         router.route("/auth-api/*").handler(BodyHandler.create());
-        router.get("/auth-api/token").handler(this::getToken);
+
         router.get("/auth-api/redirect").handler(this::redirect);
         router.post("/auth-api/otp-validate").handler(this::otpValidator);
 
@@ -99,8 +97,8 @@ public class RestServiceVerticle extends AbstractVerticle {
                     context.response().setStatusCode(200).putHeader("content-type", "application/json").end(jsonObject1.toString());
                 }
             } else {
-                vertx.eventBus().request("INVALIDATE_KC_SESSION", requestObject, reply -> {
-                    log.debug("Message from KC Verticle" + reply.result().body());
+
+                keycloakService.invalidateSession(requestObject, reply -> {
                     JsonObject jsonObject1 = new JsonObject();
                     jsonObject1.put("location", "http://localhost:4200");
                     context.response().setStatusCode(200).putHeader("content-type", "application/json").end(jsonObject1.toString());
@@ -144,25 +142,6 @@ public class RestServiceVerticle extends AbstractVerticle {
 
     }
 
-    private void getToken(RoutingContext routingContext) {
-        log.info("Request Receive...");
-        JsonObject jsonObject = new JsonObject();
-        jsonObject.put("token", "eeeeeee");
-        DeliveryOptions options = new DeliveryOptions();
-
-
-        vertx.eventBus().request("GET_TOKEN", jsonObject, options, messageAsyncResult -> {
-            if (messageAsyncResult.succeeded()) {
-                JsonObject jsonObject1 = (JsonObject) messageAsyncResult.result().body();
-                routingContext.response().putHeader("content-type", "application/json").setStatusCode(200)
-                        .end(jsonObject1.toString());
-            } else {
-                ReplyException replyException = (ReplyException) messageAsyncResult.cause();
-                routingContext.response().putHeader("content-type", "application/json")
-                        .setStatusCode(replyException.failureCode()).end(replyException.getMessage());
-            }
-        });
-    }
 
     private JsonObject getOTPObject(String otp, String queryParam) {
         JsonObject requestParam = new JsonObject();
