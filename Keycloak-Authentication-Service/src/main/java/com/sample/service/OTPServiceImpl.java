@@ -25,6 +25,23 @@ public class OTPServiceImpl implements OTPService {
         resultHandler.handle(Future.succeededFuture(otpEntries));
     }
 
+    @Override
+    public void validateOTP(JsonObject otpParam, Handler<AsyncResult<JsonObject>> resultHandler) {
+        log.debug("validation process started : " + otpParam.encodePrettily());
+
+        JsonObject respObject = new JsonObject();
+        String otp = otpParam.getString("otp");
+
+        if (otp.endsWith("00")) {
+            resultHandler.handle(Future.failedFuture("invalid OTP !"));
+        } else if (otp.endsWith("0")) {
+            resultHandler.handle(Future.succeededFuture(new JsonObject().put("message", "retry")));
+        } else {
+            resultHandler.handle(Future.succeededFuture(new JsonObject().put("message", "success")));
+        }
+
+    }
+
 
     private String getOtp() {
         int randomPin = (int) (Math.random() * 9000) + 1000;

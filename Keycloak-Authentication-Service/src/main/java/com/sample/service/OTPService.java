@@ -5,8 +5,6 @@ import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
-import io.vertx.core.eventbus.Message;
-import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 @VertxGen
@@ -19,4 +17,6 @@ public interface OTPService {
 
 
     void generateOTP(Handler<AsyncResult<JsonObject>> resultHandler);
+
+    void validateOTP(JsonObject otpParam, Handler<AsyncResult<JsonObject>> resultHandler);
 }

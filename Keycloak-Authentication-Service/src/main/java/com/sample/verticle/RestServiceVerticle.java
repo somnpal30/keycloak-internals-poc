@@ -14,7 +14,6 @@ import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.CorsHandler;
 import io.vertx.ext.web.sstore.LocalSessionStore;
 import io.vertx.ext.web.sstore.SessionStore;
-import io.vertx.serviceproxy.ServiceProxyBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +30,7 @@ public class RestServiceVerticle extends AbstractVerticle {
 
     @Override
     public void start(Promise<Void> startPromise) throws Exception {
-        otpService =OTPService.create(vertx,"otp.service");
+        otpService = OTPService.create(vertx, "otp.service");
 
        /* ServiceProxyBuilder otpServiceProxyBuilder = new ServiceProxyBuilder(vertx).setAddress("otp.service");
         OTPService service = otpServiceProxyBuilder.build(OTPService.class);*/
@@ -88,36 +87,28 @@ public class RestServiceVerticle extends AbstractVerticle {
     }
 
     private void validateOTP(RoutingContext context, JsonObject requestObject, String queryParam) {
-        vertx.eventBus().request("OTP_VALIDATE", requestObject, messageAsyncResult -> {
-            if (messageAsyncResult.succeeded()) {
-                log.debug(" otp status : " + messageAsyncResult.result().body());
-                if ("retry".equals(messageAsyncResult.result().body())) {
+
+        otpService.validateOTP(requestObject, result -> {
+            if (result.succeeded()) {
+                log.debug(" otp status : " + result.result().getString("message"));
+                if ("retry".equals(result.result().getString("message"))) {
                     context.response().setStatusCode(500).end("Please retry !");
                 } else {
                     JsonObject jsonObject1 = new JsonObject();
                     jsonObject1.put("location", "http://localhost:4200?" + queryParam);
                     context.response().setStatusCode(200).putHeader("content-type", "application/json").end(jsonObject1.toString());
                 }
-
-
             } else {
                 vertx.eventBus().request("INVALIDATE_KC_SESSION", requestObject, reply -> {
-         /* if (reply.succeeded()) {
-            ReplyException replyException = (ReplyException) messageAsyncResult.cause();
-            log.warn(replyException.getMessage());
-            context.response().setStatusCode(replyException.failureCode()).end(replyException.getMessage());
-          } else {
-            context.response().setStatusCode(500).end("Server Processing Failure");
-          }*/
                     log.debug("Message from KC Verticle" + reply.result().body());
                     JsonObject jsonObject1 = new JsonObject();
                     jsonObject1.put("location", "http://localhost:4200");
                     context.response().setStatusCode(200).putHeader("content-type", "application/json").end(jsonObject1.toString());
                 });
-
             }
-
         });
+
+
     }
 
 
@@ -134,7 +125,7 @@ public class RestServiceVerticle extends AbstractVerticle {
             });
 
             otpService.generateOTP(result -> {
-                if(result.succeeded()){
+                if (result.succeeded()) {
                     log.info("otp generated " + result.result().toString());
                     String url = "http://localhost:4300/otp?%s=%s&%s=%s";
                     String uuid = UUID.randomUUID().toString();
