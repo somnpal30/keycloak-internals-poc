@@ -48,3 +48,5 @@ Thumbs.db
 
 # IDEA config files
 .idea/
+/target/**
+target/**

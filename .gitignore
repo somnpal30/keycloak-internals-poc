@@ -213,6 +213,7 @@ hs_err_pid*
 
 ### Maven ###
 target/
+target/**
 pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup
@@ -362,3 +363,4 @@ gradle-app.setting
 **/build/
 
 # End of https://www.toptal.com/developers/gitignore/api/java,maven,angular,eclipse,intellij+all,visualstudiocode,node,gradle
+*.class
