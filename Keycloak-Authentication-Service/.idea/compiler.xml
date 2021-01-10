@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Annotation profile for Keycloak-Authentication-Service" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processor name="io.vertx.codegen.CodeGenProcessor" />
+        <module name="Keycloak-Authentication-Service" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="Keycloak-Authentication-Service" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

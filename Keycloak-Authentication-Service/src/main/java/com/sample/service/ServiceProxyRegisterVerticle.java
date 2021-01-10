@@ -1,7 +1,7 @@
 package com.sample.service;
 
 
-import com.sample.service.impl.KeycloakServiceImpl;
+import com.sample.service.impl.TokenServiceImpl;
 import com.sample.service.impl.OTPServiceImpl;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
@@ -22,10 +22,10 @@ public class ServiceProxyRegisterVerticle extends AbstractVerticle {
                 .register(OTPService.class, otpService);
 
 
-        KeycloakService keycloakService = new KeycloakServiceImpl(vertx);
+        TokenService tokenService = new TokenServiceImpl(vertx);
         new ServiceBinder(vertx)
                 .setAddress("keycloak.service")
-                .register(KeycloakService.class, keycloakService);
+                .register(TokenService.class, tokenService);
 
 
     }

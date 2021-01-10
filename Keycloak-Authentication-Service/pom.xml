@@ -67,9 +67,8 @@
     </dependency>
 
     <dependency>
-      <groupId>org.keycloak</groupId>
-      <artifactId>keycloak-admin-client</artifactId>
-      <version>12.0.1</version>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-auth-jwt</artifactId>
     </dependency>
 
     <dependency>

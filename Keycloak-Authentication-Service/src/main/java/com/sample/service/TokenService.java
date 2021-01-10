@@ -9,9 +9,9 @@ import io.vertx.core.json.JsonObject;
 
 @VertxGen
 @ProxyGen
-public interface KeycloakService {
-    static KeycloakService create(Vertx vertx, String address) {
-        return new KeycloakServiceVertxEBProxy(vertx, address);
+public interface TokenService {
+    static TokenService create(Vertx vertx, String address) {
+        return new TokenServiceVertxEBProxy(vertx, address);
     }
 
     void invalidateSession(JsonObject jsonObject, Handler<AsyncResult<Void>> resultHandler);

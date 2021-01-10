@@ -1,6 +1,6 @@
 package com.sample.verticle;
 
-import com.sample.service.KeycloakService;
+import com.sample.service.TokenService;
 import com.sample.service.OTPService;
 import io.vertx.config.ConfigRetriever;
 import io.vertx.core.AbstractVerticle;
@@ -24,14 +24,14 @@ public class RestServiceVerticle extends AbstractVerticle {
     private final Logger log = LoggerFactory.getLogger(RestServiceVerticle.class);
     SessionStore store = null;
     OTPService otpService;
-    KeycloakService keycloakService;
+    TokenService tokenService;
     String _SESSION = "session_state";
     String _UID = "prng";
 
     @Override
     public void start(Promise<Void> startPromise) throws Exception {
         otpService = OTPService.create(vertx, "otp.service");
-        keycloakService = KeycloakService.create(vertx, "keycloak.service");
+        tokenService = TokenService.create(vertx, "keycloak.service");
 
         Router router = Router.router(vertx);
 
@@ -98,7 +98,7 @@ public class RestServiceVerticle extends AbstractVerticle {
                 }
             } else {
 
-                keycloakService.invalidateSession(requestObject, reply -> {
+                tokenService.invalidateSession(requestObject, reply -> {
                     JsonObject jsonObject1 = new JsonObject();
                     jsonObject1.put("location", "http://localhost:4200");
                     context.response().setStatusCode(200).putHeader("content-type", "application/json").end(jsonObject1.toString());
