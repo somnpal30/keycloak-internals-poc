@@ -14,5 +14,5 @@ public interface TokenService {
         return new TokenServiceVertxEBProxy(vertx, address);
     }
 
-    void invalidateSession(JsonObject jsonObject, Handler<AsyncResult<Void>> resultHandler);
+    void getToken(JsonObject jsonObject, Handler<AsyncResult<Void>> resultHandler);
 }
